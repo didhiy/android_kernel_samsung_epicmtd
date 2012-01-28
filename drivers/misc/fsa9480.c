@@ -115,7 +115,7 @@
 #define WIMAX_CABLE_50K       1553
 #define WIMAX_CABLE_50K_DIS   1567
 
-#ifdef CONFIG_USB_S3C_OTG_HOST
+#if defined CONFIG_USB_S3C_OTG_HOST || defined CONFIG_USB_DWC_OTG
 extern void set_otghost_mode(int mode);
 #endif
 
@@ -411,7 +411,7 @@ static void fsa9480_detect_dev(struct fsa9480_usbsw *usbsw)
 				pdata->wimax_cb(FSA9480_ATTACHED);
 				switch_set_state(&wimax_cable, USB_CABLE_255K);
 #endif
-#ifdef CONFIG_USB_S3C_OTG_HOST
+#if defined CONFIG_USB_S3C_OTG_HOST || defined CONFIG_USB_DWC_OTG
 // sztupy: handle automatic otg switching
                        if (val1 & DEV_USB_OTG) {
                                // otg cable detected
@@ -520,7 +520,7 @@ static void fsa9480_detect_dev(struct fsa9480_usbsw *usbsw)
 				pdata->wimax_cb(FSA9480_DETACHED);
 			switch_set_state(&wimax_cable, CABLE_DISCONNECT);
 #endif
-#ifdef CONFIG_USB_S3C_OTG_HOST
+#if defined CONFIG_USB_S3C_OTG_HOST || defined CONFIG_USB_DWC_OTG
                                // sztupy: also switch off otg host mode
                                set_otghost_mode(0);
 #endif

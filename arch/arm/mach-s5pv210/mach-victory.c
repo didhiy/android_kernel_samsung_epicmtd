@@ -3174,8 +3174,11 @@ static struct platform_device *victory_devices[] __initdata = {
 	&victory_device_i2c9, /* max1704x:fuel_guage */
 	&victory_device_i2c11, /* optical sensor */
 	&victory_device_i2c12, /* MAX8893 PMIC */
-#ifdef CONFIG_USB_S3C_OTG_HOST
-       &s3c_device_usb_otghcd,
+#if defined CONFIG_USB_S3C_OTG_HOST
+ 	&s3c_device_usb_otghcd,
+#endif
+#if defined CONFIG_USB_DWC_OTG
+	&s3c_device_usb_dwcotg,
 #endif
 #ifdef CONFIG_USB_GADGET
 	&s3c_device_usbgadget,
@@ -3616,7 +3619,7 @@ void usb_host_phy_off(void)
 EXPORT_SYMBOL(usb_host_phy_off);
 #endif
 
-#ifdef CONFIG_USB_S3C_OTG_HOST
+#if defined CONFIG_USB_S3C_OTG_HOST || defined CONFIG_USB_DWC_OTG
 
 /* Initializes OTG Phy */
 void otg_host_phy_init(void)
@@ -3624,11 +3627,11 @@ void otg_host_phy_init(void)
        __raw_writel(__raw_readl(S5P_USB_PHY_CONTROL)
                |(0x1<<0), S5P_USB_PHY_CONTROL); /*USB PHY0 Enable */
 // from galaxy tab otg host:
-//     __raw_writel((__raw_readl(S3C_USBOTG_PHYPWR)
-//             &~(0x3<<3)&~(0x1<<0))|(0x1<<5), S3C_USBOTG_PHYPWR);
+       __raw_writel((__raw_readl(S3C_USBOTG_PHYPWR)
+             &~(0x3<<3)&~(0x1<<0))|(0x1<<5), S3C_USBOTG_PHYPWR);
 // from galaxy s2 otg host:
-        __raw_writel((__raw_readl(S3C_USBOTG_PHYPWR)
-               &~(0x7<<3)&~(0x1<<0)), S3C_USBOTG_PHYPWR);
+//     __raw_writel((__raw_readl(S3C_USBOTG_PHYPWR)
+//           &~(0x7<<3)&~(0x1<<0)), S3C_USBOTG_PHYPWR);
        __raw_writel((__raw_readl(S3C_USBOTG_PHYCLK)
                &~(0x1<<4))|(0x7<<0), S3C_USBOTG_PHYCLK);
 
