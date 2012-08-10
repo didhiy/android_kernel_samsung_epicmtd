@@ -280,7 +280,7 @@ adj = 140;
 // terrible shameful hack allowing to get back standard
 // colors without fixing the real thing properly (gamma table)
 // it consist on a simple (negative) offset applied on v0
-gamma_regs[c] = ((adj + hacky_v1_offset[c]) > 0 && (adj <=255)) ? (adj + hacky_v1_offset[c]) | 0x100 : adj | 0x100;
+gamma_regs[c] = (adj > (hacky_v1_offset[3]) && (adj <=255)) ? (adj - (hacky_v1_offset[3])) | 0x100 : adj | 0x100;
 #else
 gamma_regs[c] = adj | 0x100;
 #endif
