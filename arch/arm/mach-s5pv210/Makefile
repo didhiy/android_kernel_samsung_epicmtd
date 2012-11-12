@@ -43,7 +43,11 @@ endif
 obj-$(CONFIG_MACH_VICTORY)	+= aries-btlpm.o
 obj-$(CONFIG_MACH_VICTORY)	+= aries-watchdog.o
 obj-$(CONFIG_MACH_VICTORY)	+= aries-panel.o
+ifeq ($(CONFIG_SAMSUNG_MODEMCTL),y)
+obj-$(CONFIG_MACH_VICTORY)	+= dev-victory-phone.o
+else
 obj-$(CONFIG_MACH_VICTORY)	+= dev-aries-phone.o
+endif
 obj-$(CONFIG_MACH_VICTORY)	+= max8893_consumer.o
 
 # device support
