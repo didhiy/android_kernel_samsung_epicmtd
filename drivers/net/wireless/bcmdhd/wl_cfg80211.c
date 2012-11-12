@@ -1867,6 +1867,7 @@ wl_cfg80211_join_ibss(struct wiphy *wiphy, struct net_device *dev,
 	/* Clean BSSID */
 	bzero(&bssid, sizeof(bssid));
 	wl_update_prof(wl, dev, NULL, (void *)&bssid, WL_PROF_BSSID);
+	wl_update_prof(wl, dev, NULL, params->bssid, WL_PROF_PENDING_BSSID);
 
 	if (params->ssid)
 		WL_INFO(("SSID: %s\n", params->ssid));
@@ -2338,6 +2339,7 @@ wl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 	/* Clean BSSID */
 	bzero(&bssid, sizeof(bssid));
 	wl_update_prof(wl, dev, NULL, (void *)&bssid, WL_PROF_BSSID);
+	wl_update_prof(wl, dev, NULL, sme->bssid, WL_PROF_PENDING_BSSID);
 
 	if (IS_P2P_SSID(sme->ssid) && (dev != wl_to_prmry_ndev(wl))) {
 		/* we only allow to connect using virtual interface in case of P2P */
@@ -3064,6 +3066,23 @@ get_station_err:
 		}
 	}
 
+	return err;
+}
+
+int wl_cfg80211_update_power_mode(struct net_device *dev)
+{
+	int pm = -1;
+	int err;
+
+	err = wldev_ioctl(dev, WLC_GET_PM, &pm, sizeof(pm), false);
+	if (err || (pm == -1)) {
+		WL_ERR(("error (%d)\n", err));
+	} else {
+		pm = (pm == PM_OFF) ? false : true;
+		WL_DBG(("%s: %d\n", __func__, pm));
+		if (dev->ieee80211_ptr)
+			dev->ieee80211_ptr->ps = pm;
+	}
 	return err;
 }
 
@@ -5125,7 +5144,8 @@ wl_notify_connect_status(struct wl_priv *wl, struct net_device *ndev,
 				WL_DBG(("wl_ibss_join_done succeeded\n"));
 			} else {
 				if (!wl_get_drv_status(wl, DISCONNECTING, ndev)) {
-					printk("wl_bss_connect_done succeeded\n");
+					printk("wl_bss_connect_done succeeded with " MACDBG "\n",
+						MAC2STRDBG((u8*)(&e->addr)));
 					wl_bss_connect_done(wl, ndev, e, data, true);
 					WL_DBG(("joined in BSS network \"%s\"\n",
 					((struct wlc_ssid *)
@@ -5174,8 +5194,8 @@ wl_notify_connect_status(struct wl_priv *wl, struct net_device *ndev,
 			wl_clr_drv_status(wl, DISCONNECTING, ndev);
 
 		} else if (wl_is_nonetwork(wl, e)) {
-			printk("connect failed event=%d e->status 0x%x\n",
-				event, (int)ntoh32(e->status));
+			printk("connect failed event=%d e->status %d e->reason %d\n",
+				event, (int)ntoh32(e->status), (int)ntoh32(e->reason));
 			/* Clean up any pending scan request */
 			if (wl->scan_request) {
 				if (wl->escan_on) {
@@ -5435,8 +5455,16 @@ wl_bss_connect_done(struct wl_priv *wl, struct net_device *ndev,
 	u8 *curbssid = wl_read_prof(wl, ndev, WL_PROF_BSSID);
 
 	WL_DBG((" enter\n"));
+
 	if (wl->scan_request) {
 		wl_notify_escan_complete(wl, ndev, true, true);
+	}
+	if (is_zero_ether_addr(curbssid)) {
+		curbssid = wl_read_prof(wl, ndev, WL_PROF_PENDING_BSSID);
+		if (is_zero_ether_addr(curbssid)) {
+			WL_ERR(("Invalid BSSID\n"));
+			curbssid = NULL;
+		}
 	}
 	if (wl_get_drv_status(wl, CONNECTING, ndev)) {
 		wl_clr_drv_status(wl, CONNECTING, ndev);
@@ -5454,7 +5482,9 @@ wl_bss_connect_done(struct wl_priv *wl, struct net_device *ndev,
 			conn_info->req_ie_len,
 			conn_info->resp_ie,
 			conn_info->resp_ie_len,
-			completed ? WLAN_STATUS_SUCCESS : e->reason,
+			completed ? WLAN_STATUS_SUCCESS :
+			(e->reason) ? ntoh32(e->reason) :
+			WLAN_STATUS_UNSPECIFIED_FAILURE,
 			GFP_KERNEL);
 		if (completed)
 			WL_INFO(("Report connect result - connection succeeded\n"));
@@ -7293,6 +7323,7 @@ s32 wl_update_wiphybands(struct wl_priv *wl)
 			wiphy->bands[index]->ht_cap.ht_supported = TRUE;
 			wiphy->bands[index]->ht_cap.ampdu_factor = IEEE80211_HT_MAX_AMPDU_64K;
 			wiphy->bands[index]->ht_cap.ampdu_density = IEEE80211_HT_MPDU_DENSITY_16;
+			wiphy->bands[index]->ht_cap.mcs.rx_mask[0] = 0xff;
 		}
 	}
 
@@ -7451,6 +7482,9 @@ static void *wl_read_prof(struct wl_priv *wl, struct net_device *ndev, s32 item)
 	case WL_PROF_BSSID:
 		rptr = profile->bssid;
 		break;
+	case WL_PROF_PENDING_BSSID:
+		rptr = profile->pending_bssid;
+		break;
 	case WL_PROF_SSID:
 		rptr = &profile->ssid;
 		break;
@@ -7486,6 +7520,12 @@ wl_update_prof(struct wl_priv *wl, struct net_device *ndev,
 			memcpy(profile->bssid, data, ETHER_ADDR_LEN);
 		else
 			memset(profile->bssid, 0, ETHER_ADDR_LEN);
+		break;
+	case WL_PROF_PENDING_BSSID:
+		if (data)
+			memcpy(profile->pending_bssid, data, ETHER_ADDR_LEN);
+		else
+			memset(profile->pending_bssid, 0, ETHER_ADDR_LEN);
 		break;
 	case WL_PROF_SEC:
 		memcpy(&profile->sec, data, sizeof(profile->sec));
