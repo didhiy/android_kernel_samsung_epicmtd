@@ -99,6 +99,10 @@ IMG_UINT32   PVRSRV_BridgeDispatchKM( IMG_UINT32  Ioctl,
 static struct clk *g3d_clock;
 static struct regulator *g3d_pd_regulator;
 
+#ifdef CONFIG_LIVE_OC
+extern unsigned long get_gpuminfreq(void);
+#endif
+
 #ifndef CONFIG_DVFS_LIMIT
 static int limit_adjust_cpufreq_notifier(struct notifier_block *nb,
 					 unsigned long event, void *data)
@@ -110,8 +114,13 @@ static int limit_adjust_cpufreq_notifier(struct notifier_block *nb,
 
 	/* This is our indicator of GPU activity */
 	if (regulator_is_enabled(g3d_pd_regulator))
+#ifdef CONFIG_LIVE_OC
+		cpufreq_verify_within_limits(policy, get_gpuminfreq(),
+					     policy->cpuinfo.max_freq);
+#else
 		cpufreq_verify_within_limits(policy, MIN_CPU_KHZ_FREQ,
 					     policy->cpuinfo.max_freq);
+#endif
 
 	return 0;
 }
@@ -124,7 +133,7 @@ static struct notifier_block cpufreq_limit_notifier = {
 static PVRSRV_ERROR EnableSGXClocks(void)
 {
 #ifdef CONFIG_DVFS_LIMIT
-	s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_PVR, L3); /* 200 MHz */
+	s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_PVR, L4); /* 100 MHz was L3 200MHz*/
 #endif
 	regulator_enable(g3d_pd_regulator);
 	clk_enable(g3d_clock);

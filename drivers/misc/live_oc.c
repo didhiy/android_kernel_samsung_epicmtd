@@ -13,7 +13,7 @@
 
 #define LIVEOC_VERSION 1
 
-#define MAX_OCVALUE 106
+#define MAX_OCVALUE 104
 
 extern void liveoc_update(unsigned int oc_value);
 
