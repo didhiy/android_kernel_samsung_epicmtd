@@ -64,6 +64,7 @@ enum {
 	CHARGING_MODE_BOOTING,
 	BATT_TEMP_CHECK,
 	BATT_FULL_CHECK,
+	DISABLE_CHARGER,
 	AUTH_BATTERY,	// Returns valid result if __VZW_AUTH_CHECK__ is defined.
 	BATT_CHG_CURRENT_AVER,
 	BATT_TYPE,
@@ -85,10 +86,6 @@ enum {
 	BATT_USE_WIMAX,
 	BATT_USE,	/* flags */
 #endif
-};
-
-enum {
-	DISABLE_CHARGER,
 };
 
 #define TOTAL_CHARGING_TIME	(6*60*60)	/* 6 hours */
