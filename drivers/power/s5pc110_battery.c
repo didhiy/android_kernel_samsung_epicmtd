@@ -150,6 +150,7 @@ struct chg_data {
 static struct chg_data *pchg = NULL;	// pointer to chg initialized in probe function
 
 static bool lpm_charging_mode;
+
 static bool disable_charger;
 
 static char *supply_list[] = {
@@ -196,7 +197,6 @@ static struct device_attribute s3c_battery_attrs[] = {
 	SEC_BATTERY_ATTR(charging_mode_booting),
 	SEC_BATTERY_ATTR(batt_temp_check),
 	SEC_BATTERY_ATTR(batt_full_check),
-	SEC_BATTERY_ATTR(disable_charger),
         SEC_BATTERY_ATTR(auth_battery),	// Returns valid result if __VZW_AUTH_CHECK__ is defined.
         SEC_BATTERY_ATTR(batt_chg_current_aver),
 	SEC_BATTERY_ATTR(batt_type), //to check only
@@ -218,6 +218,23 @@ static struct device_attribute s3c_battery_attrs[] = {
 	SEC_BATTERY_ATTR(wimax),
 	SEC_BATTERY_ATTR(batt_use),
 #endif
+};
+
+static ssize_t s3c_bat_show_attrs(struct device *dev,
+				  struct device_attribute *attr, char *buf);
+
+static ssize_t s3c_bat_store_attrs(struct device *dev, struct device_attribute *attr,
+				   const char *buf, size_t count);
+
+#define SEC_BATTERY_ATTR(_name)						\
+{									\
+	.attr = {.name = #_name, .mode = 0664 },	\
+	.show = s3c_bat_show_attrs,					\
+	.store = s3c_bat_store_attrs,					\
+}
+
+static struct device_attribute s3c_battery_attrs[] = {
+	SEC_BATTERY_ATTR(disable_charger)
 };
 
 static void max8998_set_cable(struct max8998_charger_callbacks *ptr,
@@ -815,9 +832,6 @@ static ssize_t s3c_bat_show_attrs(struct device *dev,
 		else
 			i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", 0);
 		break;
-	case DISABLE_CHARGER:
-			i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", disable_charger);
-		break;
         case AUTH_BATTERY:
 #ifdef  __VZW_AUTH_CHECK__
 		if (chg->jig_status)
@@ -919,12 +933,6 @@ static ssize_t s3c_bat_store_attrs(struct device *dev, struct device_attribute *
 			ret = count;
 		}
 		break;
-	case DISABLE_CHARGER:
-		if (sscanf(buf, "%d\n", &x) == 1) {
-			disable_charger = x;
-			ret = count;
-		}
-		break;
 #ifdef __SOC_TEST__
         case SOC_TEST:
                 if (sscanf(buf, "%d\n", &x) == 1) {
@@ -991,6 +999,68 @@ static ssize_t s3c_bat_store_attrs(struct device *dev, struct device_attribute *
 		}
 		break;
 #endif
+	default:
+		ret = -EINVAL;
+	}
+
+	return ret;
+}
+
+static int s3c_bat_create_attrs(struct device *dev)
+{
+	int i, rc;
+
+	for (i = 0; i < ARRAY_SIZE(s3c_battery_attrs); i++) {
+		rc = device_create_file(dev, &s3c_battery_attrs[i]);
+		if (rc)
+			goto s3c_attrs_failed;
+	}
+	goto succeed;
+
+s3c_attrs_failed:
+	while (i--)
+		device_remove_file(dev, &s3c_battery_attrs[i]);
+succeed:
+	return rc;
+}
+
+static ssize_t s3c_bat_show_attrs(struct device *dev,
+				  struct device_attribute *attr, char *buf)
+{
+	struct power_supply *psy = dev_get_drvdata(dev);
+	struct chg_data *chg = container_of(psy, struct chg_data, psy_bat);
+	int i = 0;
+	const ptrdiff_t off = attr - s3c_battery_attrs;
+	union power_supply_propval value;
+
+	switch (off) {
+	case DISABLE_CHARGER:
+		i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", disable_charger);
+		break;
+	default:
+		i = -EINVAL;
+	}
+
+	return i;
+}
+
+static ssize_t s3c_bat_store_attrs(struct device *dev, struct device_attribute *attr,
+				   const char *buf, size_t count)
+{
+//	struct power_supply *psy = dev_get_drvdata(dev);
+//	struct chg_data *chg = container_of(psy, struct chg_data, psy_bat);
+	int x = 0;
+	int ret = 0;
+	const ptrdiff_t off = attr - s3c_battery_attrs;
+
+	switch (off) {
+	case DISABLE_CHARGER:
+		if (sscanf(buf, "%d\n", &x) == 1) {
+			disable_charger = x;
+			ret = count;
+		}
+		break;
+
 	default:
 		ret = -EINVAL;
 	}
@@ -1219,6 +1289,12 @@ static __devinit int max8998_charger_probe(struct platform_device *pdev)
 		goto err_irq;
 	}
 #endif
+
+	ret = s3c_bat_create_attrs(chg->psy_bat.dev);
+	if (ret) {
+		pr_err("%s : Failed to create_attrs\n", __func__);
+		goto err_irq;
+	}
 
 	chg->callbacks.set_cable = max8998_set_cable;
 	if (chg->pdata->register_callbacks)
