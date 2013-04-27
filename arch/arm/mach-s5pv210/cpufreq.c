@@ -97,26 +97,26 @@ struct s5pv210_dvs_conf {
 static unsigned int g_dvfs_printk_mask = ~(1<<DVFS_LOCK_TOKEN_PVR) &
                                          ((1<<DVFS_LOCK_TOKEN_NUM)-1);
 static unsigned int g_dvfs_high_lock_token = 0;
-static unsigned int g_dvfs_high_lock_limit = 6;
+static unsigned int g_dvfs_high_lock_limit = MAX_PERF_LEVEL;
 static unsigned int g_dvfslockval[DVFS_LOCK_TOKEN_NUM];
 //static DEFINE_MUTEX(dvfs_high_lock);
 #endif
 
 #ifdef CONFIG_CUSTOM_VOLTAGE
-unsigned long arm_volt_max = 1350000;
+unsigned long arm_volt_max = 1500000;
 unsigned long int_volt_max = 1250000;
 #else
-const unsigned long arm_volt_max = 1350000;
+const unsigned long arm_volt_max = 1500000;
 const unsigned long int_volt_max = 1250000;
 #endif
 
 static struct s5pv210_dvs_conf dvs_conf[] = {
 	[OC0] = {
-		.arm_volt   = 1350000,
-		.int_volt   = 1150000,
+		.arm_volt   = 1450000,
+		.int_volt   = 1250000,
 	},
 	[OC1] = {
-		.arm_volt   = 1275000,
+		.arm_volt   = 1300000,
 		.int_volt   = 1125000,
 	},
 	[L0] = {
