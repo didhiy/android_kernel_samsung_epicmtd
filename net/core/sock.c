@@ -205,7 +205,7 @@ static struct lock_class_key af_callback_keys[AF_MAX];
  * not depend upon such differences.
  */
 #define _SK_MEM_PACKETS		256
-#define _SK_MEM_OVERHEAD	SKB_TRUESIZE(256)
+#define _SK_MEM_OVERHEAD	(sizeof(struct sk_buff) + 256)
 #define SK_WMEM_MAX		(_SK_MEM_OVERHEAD * _SK_MEM_PACKETS)
 #define SK_RMEM_MAX		(_SK_MEM_OVERHEAD * _SK_MEM_PACKETS)
 
@@ -1015,18 +1015,6 @@ static void sock_copy(struct sock *nsk, const struct sock *osk)
 	nsk->sk_security = sptr;
 	security_sk_clone(osk, nsk);
 #endif
-}
-
-/*
- * caches using SLAB_DESTROY_BY_RCU should let .next pointer from nulls nodes
- * un-modified. Special care is taken when initializing object to zero.
- */
-static inline void sk_prot_clear_nulls(struct sock *sk, int size)
-{
-	if (offsetof(struct sock, sk_node.next) != 0)
-		memset(sk, 0, offsetof(struct sock, sk_node.next));
-	memset(&sk->sk_node.pprev, 0,
-	       size - offsetof(struct sock, sk_node.pprev));
 }
 
 void sk_prot_clear_portaddr_nulls(struct sock *sk, int size)
