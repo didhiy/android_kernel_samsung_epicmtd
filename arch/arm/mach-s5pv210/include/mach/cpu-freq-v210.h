@@ -27,8 +27,7 @@ struct s5pv210_cpufreq_data {
 };
 
 enum perf_level {
-	OC0 = 0,	// 1.4GHz
-	OC1,	// 1.2GHz
+	OC0 = 0,	// 1.2GHz
 	L0,	// 1GHz
 	L1,	// 800MHz
 	L2,	// 400MHz
