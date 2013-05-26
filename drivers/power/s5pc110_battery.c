@@ -545,7 +545,7 @@ static int max8998_charging_control(struct chg_data *chg)
 			ret = max8998_write_reg(i2c, MAX8998_REG_CHGR1,
 						(2 << MAX8998_SHIFT_TOPOFF) |
 						(3 << MAX8998_SHIFT_RSTR) |
-						(MAX8998_ICHG << MAX8998_SHIFT_ICHG));
+						(5 << MAX8998_SHIFT_ICHG));
 			if (ret < 0)
 				goto err;
 
