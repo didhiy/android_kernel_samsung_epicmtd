@@ -84,7 +84,7 @@ static int max17040_get_property(struct power_supply *psy,
 		val->intval = chip->online;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-		val->intval = chip->vcell;
+		val->intval = chip->vcell * 1250;
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
 		val->intval = chip->soc;
@@ -128,7 +128,7 @@ static void max17040_get_vcell(struct i2c_client *client)
 	msb = max17040_read_reg(client, MAX17040_VCELL_MSB);
 	lsb = max17040_read_reg(client, MAX17040_VCELL_LSB);
 
-	chip->vcell = ((msb << 4) + (lsb >> 4)) * 1250;
+	chip->vcell = (msb << 4) + (lsb >> 4);
 }
 
 static void max17040_get_soc(struct i2c_client *client)
