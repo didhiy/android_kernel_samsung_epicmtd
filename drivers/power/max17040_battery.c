@@ -131,27 +131,37 @@ static void max17040_get_soc(struct i2c_client *client)
 	struct max17040_chip *chip = i2c_get_clientdata(client);
 	u8 msb;
 	u8 lsb;
-	int pure_soc, adj_soc, soc;
+	u32 soc = 0;
+	u32 temp = 0;
+	u32 temp_soc = 0;
 
 	msb = max17040_read_reg(client, MAX17040_SOC_MSB);
 	lsb = max17040_read_reg(client, MAX17040_SOC_LSB);
 
-	/*Adjusted SOC(Victory)
-	**RCOMP : D0h, FULL : 94.3, EMPTY : 1.4
-	**Adj_soc = (SOC%-EMPTY)/(FULL-EMPTY)*100
-	*/
+	temp = msb * 100 + ((lsb * 100) / 256);
 
-	pure_soc = msb * 100 + ((lsb * 100) / 256);
+	if (temp >= 100)
+		temp_soc = temp;
+	else {
+		if (temp >= 70)
+			temp_soc = 100;
+		else
+			temp_soc = 0;
+	}
 
-	if (pure_soc >= 0)
-		adj_soc = ((pure_soc * 10000) - 140) / (9430 - 140);
-	else
-		adj_soc = 0;
+	/* rounding off and Changing to percentage */
+	soc = temp_soc / 100;
 
-	soc = adj_soc / 100;
-
-	if (adj_soc % 100 >= 50)
+	if (temp_soc % 100 >= 50)
 		soc += 1;
+
+	if (soc >= 26)
+		soc += 4;
+	else
+		soc = (30 * temp_soc) / 26 / 100;
+
+	if (soc >= 100)
+		soc = 100;
 
 	chip->soc = soc;
 }
