@@ -126,43 +126,73 @@ static void max17040_get_vcell(struct i2c_client *client)
 	chip->vcell = (msb << 4) + (lsb >> 4);
 }
 
+static unsigned int prevFGSOC = 0;
+static unsigned int fg_zero_count = 0;
 static void max17040_get_soc(struct i2c_client *client)
 {
 	struct max17040_chip *chip = i2c_get_clientdata(client);
 	u8 msb;
 	u8 lsb;
-	u32 soc = 0;
-	u32 temp = 0;
-	u32 temp_soc = 0;
+	uint pure_soc, adj_soc, soc;
 
 	msb = max17040_read_reg(client, MAX17040_SOC_MSB);
 	lsb = max17040_read_reg(client, MAX17040_SOC_LSB);
 
-	temp = msb * 100 + ((lsb * 100) / 256);
+	pure_soc = msb * 100 + (lsb * 100) / 256;
 
-	if (temp >= 100)
-		temp_soc = temp;
-	else {
-		if (temp >= 70)
-			temp_soc = 100;
+	if (pure_soc >= 60)
+	{
+		if (pure_soc >= 460)
+		{
+			adj_soc = (pure_soc - 460)*8650/8740 + 1350;
+		}
 		else
-			temp_soc = 0;
+		{
+			adj_soc = (pure_soc - 60)*1350/400;
+		}
+
+		if (adj_soc < 100)
+			adj_soc = 100; //1%
+	}
+	else
+	{
+		adj_soc = 0; //0%
 	}
 
-	/* rounding off and Changing to percentage */
-	soc = temp_soc / 100;
+	// rounding off and Changing to percentage.
+	soc=adj_soc/100;
 
-	if (temp_soc % 100 >= 50)
-		soc += 1;
+	if (adj_soc%100 >= 50 )
+	{
+		soc+=1;
+	}
 
-	if (soc >= 26)
-		soc += 4;
+	if (soc>=100)
+	{
+		soc=100;
+	}
+
+	/* we judge real 0% after 3 continuous counting */
+	if (soc == 0)
+	{
+		fg_zero_count++;
+
+		if (fg_zero_count >= 3)
+		{
+			soc = 0;
+			fg_zero_count = 0;
+		}
+		else
+		{
+			soc = prevFGSOC;
+		}
+	}
 	else
-		soc = (30 * temp_soc) / 26 / 100;
+	{
+		fg_zero_count=0;
+	}
 
-	if (soc >= 100)
-		soc = 100;
-
+	prevFGSOC = soc;
 	chip->soc = soc;
 }
 
