@@ -2,25 +2,6 @@
 
 mDNIe_data_type mDNIe_Video[]= 
 {
-#ifdef CONFIG_VOODOO_MDNIE
-        // Voodoo color: optimized UI mode
-        // reduce the sharpness filter radius to make it much closer
-        // to the real fuzzyness introduced by the SAMOLED Pentile pattern
-        // color saturation boost on everything is also disabled because
-        // it causes harm on stock settings (exaggerated colors)
-        0x0084, 0x0040,
-        0x0090, 0x0000,
-        0x0094, 0x0FFF,
-        0x0098, 0x005C,
-        0x009C, 0x0613,
-        0x00AC, 0x0000,
-        0x00B4, 0x0A00,
-        0x00C0, 0x0400,
-        0x00C4, 0x7200,
-        0x00C8, 0x008D,
-        0x00D0, 0x00C0,
-        END_SEQ, 0x0000,
-#else
 	0x0084,0x0060, //algorithm selection+pcc + mcm
 	0x0090,0x0000, //decontour th.
 	0x0094,0x0fff, //directional th.
@@ -37,30 +18,10 @@ mDNIe_data_type mDNIe_Video[]=
 	0x0148,0x0073, //cr
 	0x0134,0xFFF8, //LSF 248 
 	END_SEQ, 0x0000,
-#endif
 };
 
 mDNIe_data_type mDNIe_Camera[]= 
 {
-#ifdef CONFIG_VOODOO_MDNIE
-        // Voodoo color: optimized UI mode
-        // reduce the sharpness filter radius to make it much closer
-        // to the real fuzzyness introduced by the SAMOLED Pentile pattern
-        // color saturation boost on everything is also disabled because
-        // it causes harm on stock settings (exaggerated colors)
-        0x0084, 0x0040,
-        0x0090, 0x0000,
-        0x0094, 0x0FFF,
-        0x0098, 0x005C,
-        0x009C, 0x0613,
-        0x00AC, 0x0000,
-        0x00B4, 0x0A00,
-        0x00C0, 0x0400,
-        0x00C4, 0x7200,
-        0x00C8, 0x008D,
-        0x00D0, 0x00C0,
-        END_SEQ, 0x0000,
-#else
 	0x0084,0x0020, //algorithm selection + mcm
 	0x0090,0x0000, //decontour th.
 	0x0094,0x0fff, //directional th.
@@ -73,7 +34,6 @@ mDNIe_data_type mDNIe_Camera[]=
 	0x0148,0x0073, //cr
 	0x0134,0xFFF8, //LSF 248
 	END_SEQ, 0x0000,
-#endif
 };
 
 mDNIe_data_type mDNIe_Camera_Outdoor_Mode[]= 
@@ -95,25 +55,6 @@ mDNIe_data_type mDNIe_Camera_Outdoor_Mode[]=
 
 mDNIe_data_type mDNIe_UI[]= 
 {
-#ifdef CONFIG_VOODOO_MDNIE
-        // Voodoo color: optimized UI mode
-        // reduce the sharpness filter radius to make it much closer
-        // to the real fuzzyness introduced by the SAMOLED Pentile pattern
-        // color saturation boost on everything is also disabled because
-        // it causes harm on stock settings (exaggerated colors)
-        0x0084, 0x0040,
-        0x0090, 0x0000,
-        0x0094, 0x0FFF,
-        0x0098, 0x005C,
-        0x009C, 0x0613,
-        0x00AC, 0x0000,
-        0x00B4, 0x0A00,
-        0x00C0, 0x0400,
-        0x00C4, 0x7200,
-        0x00C8, 0x008D,
-        0x00D0, 0x00C0,
-        END_SEQ, 0x0000,
-#else
 	0x0084,0x0020, //algorithm selection + mcm
 	0x0090,0x0000, //decontour th.
 	0x0094,0x0fff, //directional th.
@@ -126,27 +67,10 @@ mDNIe_data_type mDNIe_UI[]=
 	0x0148,0x0073, //cr
 	0x0134,0xFFF8, //LSF 248
 	END_SEQ, 0x0000,
-#endif
 };
 
 mDNIe_data_type mDNIe_Video_Warm[]= 
 {
-#ifdef CONFIG_VOODOO_MDNIE_VIDEOS_ALT_PRESETS
-        // Voodoo color: high vibrance/saturation and sharpening
-        // Boost mode for videos
-        0x0084, 0x0040,
-        0x0090, 0x0000,
-        0x0094, 0x0FFF,
-        0x0098, 0x005C,
-        0x009C, 0x0FFF,
-        0x00AC, 0x0200,
-        0x00B4, 0x0800,
-        0x00C0, 0x0400,
-        0x00C4, 0x7200,
-        0x00C8, 0x008D,
-        0x00D0, 0x00C0,
-        END_SEQ, 0x0000,
-#else
 	0x0084,0x0060, //algorithm selection+pcc + mcm
 	0x0090,0x0000, //decontour th.
 	0x0094,0x0fff, //directional th.
@@ -163,7 +87,6 @@ mDNIe_data_type mDNIe_Video_Warm[]=
 	0x0148,0x0080, //cr 0
 	0x0134,0xFFF8, //LSF 248
 	END_SEQ, 0x0000,
-#endif
 };
 
 mDNIe_data_type mDNIe_Video_WO_Mode[]= 
@@ -189,22 +112,6 @@ mDNIe_data_type mDNIe_Video_WO_Mode[]=
 
 mDNIe_data_type mDNIe_Video_Cold[]= 
 {
-#ifdef CONFIG_VOODOO_MDNIE_VIDEOS_ALT_PRESETS
-        // Voodoo color : sharpness filter at minimum, unmodified color
-        // Soft mode. Useful to counter artifacts on bad or noisy videos
-        0x0084, 0x0040,
-        0x0090, 0x0000,
-        0x0094, 0x0FFF,
-        0x0098, 0x005C,
-        0x009C, 0x0010,
-        0x00AC, 0x0000,
-        0x00B4, 0x0000,
-        0x00C0, 0x0400,
-        0x00C4, 0x7200,
-        0x00C8, 0x008D,
-        0x00D0, 0x00C0,
-        END_SEQ, 0x0000,
-#else
 	0x0084,0x0060, //algorithm selection+pcc + mcm
 	0x0090,0x0000, //decontour th.
 	0x0094,0x0fff, //directional th.
@@ -221,7 +128,6 @@ mDNIe_data_type mDNIe_Video_Cold[]=
 	0x0148,0x006d, //cr -19
 	0x0134,0xFFF8, //LSF 248
 	END_SEQ, 0x0000,
-#endif
 };
 
 mDNIe_data_type mDNIe_Video_CO_Mode[]= 
@@ -284,23 +190,6 @@ mDNIe_data_type mDNIe_Gallery[]=
 
 mDNIe_data_type mDNIe_Video[]= 
 {
-#ifdef CONFIG_VOODOO_MDNIE
-// Voodoo color: mDNIe settings optimized for most video
-        // standard response curve
-        // nice sharpness filter and very light color saturation boost
-        0x0084, 0x0040,
-        0x0090, 0x0000,
-        0x0094, 0x0FFF,
-        0x0098, 0x005C,
-        0x009C, 0x0FF5,
-        0x00AC, 0x0007,
-        0x00B4, 0x0500,
-        0x00C0, 0x0400,
-        0x00C4, 0x7200,
-        0x00C8, 0x008D,
-        0x00D0, 0x00C0,
-        END_SEQ, 0x0000,
-#else
 	0x0084, 0x0040,
 	0x0090, 0x0000,
 	0x0094, 0x0fff,
@@ -313,30 +202,10 @@ mDNIe_data_type mDNIe_Video[]=
 	0x00C8, 0x008d, 
 	0x00D0, 0x0100, 
 	END_SEQ, 0x0000,
-#endif
 };
 
 mDNIe_data_type mDNIe_Camera[]= 
 {
-#ifdef CONFIG_VOODOO_MDNIE
-        // Voodoo color: optimized UI mode
-        // reduce the sharpness filter radius to make it much closer
-        // to the real fuzzyness introduced by the SAMOLED Pentile pattern
-        // color saturation boost on everything is also disabled because
-        // it causes harm on stock settings (exaggerated colors)
-        0x0084, 0x0040,
-        0x0090, 0x0000,
-        0x0094, 0x0FFF,
-        0x0098, 0x005C,
-        0x009C, 0x0613,
-        0x00AC, 0x0000,
-        0x00B4, 0x0A00,
-        0x00C0, 0x0400,
-        0x00C4, 0x7200,
-        0x00C8, 0x008D,
-        0x00D0, 0x00C0,
-        END_SEQ, 0x0000,
-#else
 	0x0084, 0x0040,
 	0x0090, 0x0000,
 	0x0094, 0x0FFF,
@@ -349,7 +218,6 @@ mDNIe_data_type mDNIe_Camera[]=
 	0x00C8, 0x008D,
 	0x00D0, 0x00C0,
 	END_SEQ, 0x0000,
-#endif
 };
 
 mDNIe_data_type mDNIe_Camera_Outdoor_Mode[]= 
@@ -397,22 +265,6 @@ mDNIe_data_type mDNIe_UI[]=
 
 mDNIe_data_type mDNIe_Video_Warm[]= 
 {
-#ifdef CONFIG_VOODOO_MDNIE_VIDEOS_ALT_PRESETS
-        // Voodoo color: high vibrance/saturation and sharpening
-        // Boost mode for videos
-        0x0084, 0x0040,
-        0x0090, 0x0000,
-        0x0094, 0x0FFF,
-        0x0098, 0x005C,
-        0x009C, 0x0FFF,
-        0x00AC, 0x0200,
-        0x00B4, 0x0800,
-        0x00C0, 0x0400,
-        0x00C4, 0x7200,
-        0x00C8, 0x008D,
-        0x00D0, 0x00C0,
-        END_SEQ, 0x0000,
-#else
 	0x0084, 0x0020,
 	0x0090, 0x0000,
 	0x0094, 0x0fff,
@@ -424,7 +276,6 @@ mDNIe_data_type mDNIe_Video_Warm[]=
 	0x0138, 0x7600,
 	0x0140, 0x0090,
 	END_SEQ, 0x0000,
-#endif	
 };
 
 mDNIe_data_type mDNIe_Video_WO_Mode[]= 
@@ -444,22 +295,6 @@ mDNIe_data_type mDNIe_Video_WO_Mode[]=
 
 mDNIe_data_type mDNIe_Video_Cold[]= 
 {
-#ifdef CONFIG_VOODOO_MDNIE_VIDEOS_ALT_PRESETS
-        // Voodoo color : sharpness filter at minimum, unmodified color
-        // Soft mode. Useful to counter artifacts on bad or noisy videos
-        0x0084, 0x0040,
-        0x0090, 0x0000,
-        0x0094, 0x0FFF,
-        0x0098, 0x005C,
-        0x009C, 0x0010,
-        0x00AC, 0x0000,
-        0x00B4, 0x0000,
-        0x00C0, 0x0400,
-        0x00C4, 0x7200,
-        0x00C8, 0x008D,
-        0x00D0, 0x00C0,
-        END_SEQ, 0x0000,
-#else
 	0x0084, 0x0020,
 	0x0090, 0x0000,
 	0x0094, 0x0fff,
@@ -471,7 +306,6 @@ mDNIe_data_type mDNIe_Video_Cold[]=
 	0x0140, 0x9400,
 	0x0148, 0x006D,
 	END_SEQ, 0x0000,
-#endif	
 };
 
 mDNIe_data_type mDNIe_Video_CO_Mode[]= 
