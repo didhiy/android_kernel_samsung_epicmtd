@@ -380,19 +380,16 @@ static struct s3cfb_lcd nt35580 = {
 	},
 };
 
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (11264 * SZ_1K)
-// Disabled to save memory (we can't find where it's used)
-//#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1 (9900 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (11264 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (11264 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (11264 * SZ_1K)
+#define S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (11264 * SZ_1K)
+#define S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1 (1024 * SZ_1K)
+#define S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (11264 * SZ_1K)
+#define S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (14336 * SZ_1K) // 11MB
+#define S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (21504 * SZ_1K) // 11MB
 #define S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (800 * 480 * 4 * \
 		(CONFIG_FB_S3C_NR_BUFFERS + \
 		(CONFIG_FB_S3C_NUM_OVLY_WIN * \
 		 CONFIG_FB_S3C_NUM_BUF_OVLY_WIN)))
-// Was 8M, but we're only using it to encode VGA jpegs
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (4096 * SZ_1K)
-
+#define S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (5012 * SZ_1K)
 static struct s5p_media_device victory_media_devs[] = {
 	[0] = {
 		.id = S5P_MDEV_FIMD,
@@ -422,13 +419,13 @@ static struct s5p_media_device victory_media_devs[] = {
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0,
 		.paddr = 0,
 	},
-/*	[4] = {
+	[4] = {
 		.id = S5P_MDEV_FIMC1,
 		.name = "fimc1",
 		.bank = 1,
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1,
 		.paddr = 0,
-	}, */
+	},
 	[5] = {
 		.id = S5P_MDEV_FIMC2,
 		.name = "fimc2",
