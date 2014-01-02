@@ -404,6 +404,7 @@ static struct s5p_media_device victory_media_devs[] = {
 		.bank = 0,
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0,
 		.paddr = 0,
+		.cmadev = &s3c_device_mfc_l.dev,
 	},
 	[2] = {
 		.id = S5P_MDEV_MFC,
@@ -411,6 +412,7 @@ static struct s5p_media_device victory_media_devs[] = {
 		.bank = 1,
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1,
 		.paddr = 0,
+		.cmadev = &s3c_device_mfc_r.dev,
 	},
 	[3] = {
 		.id = S5P_MDEV_FIMC0,
@@ -418,6 +420,7 @@ static struct s5p_media_device victory_media_devs[] = {
 		.bank = 1,
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0,
 		.paddr = 0,
+		// .cmadev = &s3c_device_fimc0.dev,
 	},
 	[4] = {
 		.id = S5P_MDEV_FIMC1,
@@ -425,6 +428,7 @@ static struct s5p_media_device victory_media_devs[] = {
 		.bank = 1,
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1,
 		.paddr = 0,
+		//.cmadev = &s3c_device_fimc1.dev,
 	},
 	[5] = {
 		.id = S5P_MDEV_FIMC2,
@@ -432,6 +436,7 @@ static struct s5p_media_device victory_media_devs[] = {
 		.bank = 1,
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2,
 		.paddr = 0,
+		// .cmadev = &s3c_device_fimc2.dev,
 	},
 	[6] = {
 		.id = S5P_MDEV_JPEG,
@@ -439,6 +444,7 @@ static struct s5p_media_device victory_media_devs[] = {
 		.bank = 0,
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG,
 		.paddr = 0,
+		.cmadev = &s3c_device_jpeg.dev,
 	},
 };
 
@@ -3142,6 +3148,8 @@ static struct platform_device *victory_devices[] __initdata = {
 
 #ifdef CONFIG_VIDEO_MFC50
 	&s3c_device_mfc,
+	&s3c_device_mfc_l,
+	&s3c_device_mfc_r,
 #endif
 #ifdef CONFIG_S5P_ADC
 	&s3c_device_adc,
