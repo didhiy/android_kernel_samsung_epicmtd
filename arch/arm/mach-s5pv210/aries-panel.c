@@ -20,19 +20,6 @@
 #include <mach/gpio.h>
 #include <linux/delay.h>
 
-#define SLEEPMSEC		0x1000
-#define ENDDEF			0x2000
-
-static const u16 s6e63m0_SEQ_DISPLAY_ON[] = {
-	0x029,
-	ENDDEF, 0x0000
-};
-
-static const u16 s6e63m0_SEQ_DISPLAY_OFF[] = {
-	0x028,
-	ENDDEF, 0x0000
-};
-
 static const u16 s6e63m0_SEQ_STANDBY_ON[] = {
 	0x010,	/* Stand-by On Command */
 	SLEEPMSEC, 160,
@@ -180,11 +167,7 @@ static const struct tl2796_gamma_adj_points gamma_adj_points = {
 	.v255 = BV_255,
 };
 
-#ifdef CONFIG_FB_VOODOO
-struct gamma_entry gamma_table[] = {
-#else
 static const struct gamma_entry gamma_table[] = {
-#endif
 	{       BV_0, { 4200000, 4200000, 4200000, }, },
 	{          1, { 3994200, 4107600, 3910200, }, },
 	{ 0x00000400, { 3669486, 3738030, 3655093, }, },
@@ -374,26 +357,8 @@ struct s5p_panel_data aries_panel_data = {
 		0x0b8,
 		0x0fc,
 	},
-	.color_adj = {
-		/* Convert from 8500K to D65, assuming:
-		 * Rx 0.66950, Ry 0.33100
-		 * Gx 0.18800, Gy 0.74350
-		 * Bx 0.14142, By 0.04258
-		 */
-		.mult = {
-			2574671360U,
-			2770946560U,
-			2921039680U,
-		},
-		.rshift = 31,
-	},
-
 	.gamma_adj_points = &gamma_adj_points,
 	.gamma_table = gamma_table,
 	.gamma_table_size = ARRAY_SIZE(gamma_table),
 };
 
-static const u16 brightness_setting_table[] = {
-	0x051, 0x17f,
-	ENDDEF, 0x0000
-};
