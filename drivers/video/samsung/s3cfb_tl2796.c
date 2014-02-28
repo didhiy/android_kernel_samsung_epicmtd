@@ -79,10 +79,10 @@ struct s5p_lcd{
 struct s5p_lcd *lcd_;
 
 // Secondary user-tunable color multiplier
-u32 color_mult[3] = { U32_MAX, U32_MAX, U32_MAX };
+u32 color_mult[3] = { 2574671360U, 2770946560U, U32_MAX };
 
 // v0 offset hack from supercurio's "Voodoo Color"
-u32 hacky_v1_offset[3] = {0, 0, 0};
+u32 hacky_v1_offset[3] = {40, 40, 34};
 
 bool block_bl = false;
 
