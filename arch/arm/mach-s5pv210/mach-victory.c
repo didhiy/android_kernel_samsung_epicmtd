@@ -2784,7 +2784,9 @@ static struct sec_jack_buttons_zone sec_jack_buttons_zones[] = {
 
 static int sec_jack_get_adc_value(void)
 {
-	//printk(" ****************** LNT DEBUG ***************** sec_jack_get_adc_value : %d \n",s3c_adc_get_adc_data(3));
+
+	printk(" ****************** LNT DEBUG ***************** sec_jack_get_adc_value : %d \n",s3c_adc_get_adc_data(3));
+
 	return s3c_adc_get_adc_data(3);
 }
 
